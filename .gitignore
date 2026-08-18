@@ -15,6 +15,7 @@ env/
 # Environment variables and database credentials
 .env
 .env.*
+!.env.example
 
 
 # Test, coverage and type-checker caches
@@ -28,4 +29,3 @@ htmlcov/
 build/
 dist/
 *.egg-info/
-
