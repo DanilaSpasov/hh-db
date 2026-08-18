@@ -16,5 +16,5 @@ def get_db_config() -> dict[str, str]:
                  "port": dbport,
                  "dbname": dbname,
                  "user": dbuser,
-                 "password": dbpassword,}
+                 "password": dbpassword, }
     return db_config
