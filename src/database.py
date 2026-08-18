@@ -42,3 +42,52 @@ def create_tables(params: dict[str, str]) -> None:
 
     connection.commit()
     connection.close()
+
+
+def save_data_to_database(data: list[dict], params: dict[str, str]) -> None:
+    """Сохраняет работодателей и вакансии в базу данных."""
+    connection = psycopg2.connect(**params)
+
+    with connection.cursor() as cur:
+        for company in data:
+            employer = company["employer"]
+            cur.execute(
+                """
+                INSERT INTO employers (employer_id, name, url)
+                VALUES (%s, %s, %s)
+                """,
+                (
+                    int(employer["id"]),
+                    employer["name"],
+                    employer["alternate_url"],
+                ),
+            )
+
+            for vacancy in company["vacancies"]:
+                salary_data = vacancy["salary"]
+                salary = (
+                    salary_data["from"] + salary_data["to"]
+                ) // 2
+
+                cur.execute(
+                    """
+                    INSERT INTO vacancies (
+                        vacancy_id,
+                        employer_id,
+                        name,
+                        salary,
+                        url
+                    )
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    (
+                        int(vacancy["id"]),
+                        int(employer["id"]),
+                        vacancy["name"],
+                        salary,
+                        vacancy["alternate_url"],
+                    ),
+                )
+
+    connection.commit()
+    connection.close()
