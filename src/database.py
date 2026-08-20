@@ -1,6 +1,25 @@
 import psycopg2
 
 
+def calculate_salary(
+    salary_data: dict[str, int | None] | None,
+) -> int | None:
+    """Рассчитывает зарплату с учётом отсутствующих границ."""
+    if salary_data is None:
+        return None
+
+    salary_from = salary_data.get("from")
+    salary_to = salary_data.get("to")
+
+    if salary_from is not None and salary_to is not None:
+        return (salary_from + salary_to) // 2
+
+    if salary_from is not None:
+        return salary_from
+
+    return salary_to
+
+
 def create_database(params: dict[str, str]) -> None:
     """Создаёт базу данных PostgreSQL."""
     database_name = params["dbname"]
@@ -64,10 +83,7 @@ def save_data_to_database(data: list[dict], params: dict[str, str]) -> None:
             )
 
             for vacancy in company["vacancies"]:
-                salary_data = vacancy["salary"]
-                salary = (
-                    salary_data["from"] + salary_data["to"]
-                ) // 2
+                salary = calculate_salary(vacancy["salary"])
 
                 cur.execute(
                     """
